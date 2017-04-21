@@ -1,0 +1,269 @@
+<div class="apidocDiv">
+<style>
+/*csslint
+*/
+.apidocDiv {
+    background: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.apidocDiv a[href] {
+    color: #33f;
+    font-weight: bold;
+    text-decoration: none;
+}
+.apidocDiv a[href]:hover {
+    text-decoration: underline;
+}
+.apidocCodeCommentSpan {
+    background: #bbf;
+    color: #000;
+    display: block;
+}
+.apidocCodeKeywordSpan {
+    color: #d00;
+    font-weight: bold;
+}
+.apidocCodePre {
+    background: #eef;
+    border: 1px solid;
+    color: #777;
+    padding: 5px;
+    white-space: pre-wrap;
+}
+.apidocFooterDiv {
+    margin-top: 20px;
+    text-align: center;
+}
+.apidocModuleLi {
+    margin-top: 10px;
+}
+.apidocSectionDiv {
+    border-top: 1px solid;
+    margin-top: 20px;
+}
+.apidocSignatureSpan {
+    color: #777;
+    font-weight: bold;
+}
+</style>
+<h1>api documentation for
+    <a
+
+    >piwik (v1.0.8)</a>
+</h1>
+<h4>Track hits, access your Piwik API, or retrieve the referrer spammers list.</h4>
+<div class="apidocSectionDiv"><a
+    href="#apidoc.tableOfContents"
+    id="apidoc.tableOfContents"
+><h1>table of contents</h1></a><ol>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.piwik">module piwik</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.piwik.api">
+            function <span class="apidocSignatureSpan">piwik.</span>api
+            <span class="apidocSignatureSpan">(vars, callback)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.piwik.loadSpammers">
+            function <span class="apidocSignatureSpan">piwik.</span>loadSpammers
+            <span class="apidocSignatureSpan">(callback)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.piwik.setup">
+            function <span class="apidocSignatureSpan">piwik.</span>setup
+            <span class="apidocSignatureSpan">(baseURL, token, timeout)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.piwik.track">
+            function <span class="apidocSignatureSpan">piwik.</span>track
+            <span class="apidocSignatureSpan">(vars, callback)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <span class="apidocSignatureSpan">object <span class="apidocSignatureSpan">piwik.</span>settings</span>
+
+        </li>
+
+    </ol></li>
+
+</ol></div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.piwik" id="apidoc.module.piwik">module piwik</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.piwik.api" id="apidoc.element.piwik.api">
+        function <span class="apidocSignatureSpan">piwik.</span>api
+        <span class="apidocSignatureSpan">(vars, callback)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function methodApi(vars, callback) {
+  vars = typeof vars === &#x27;object&#x27; ? vars : {};
+  vars.module = &#x27;API&#x27;;
+  vars.format = &#x27;JSON&#x27;;
+  vars.token_auth = app.settings.token;
+
+  talk ({
+    method: &#x27;GET&#x27;,
+    path: &#x27;index.php&#x27;,
+    query: vars,
+    callback: callback || null
+  });
+
+  return app;
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.piwik.loadSpammers" id="apidoc.element.piwik.loadSpammers">
+        function <span class="apidocSignatureSpan">piwik.</span>loadSpammers
+        <span class="apidocSignatureSpan">(callback)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function methodLoadSpammers(callback) {
+  var options = {
+    timeout: app.settings.timeout
+  };
+
+  http.get (
+    &#x27;https://github.com/piwik/referrer-spam-blacklist/raw/master/spammers.txt&#x27;,
+    options,
+    function (err, res) {
+      var data;
+
+      if (err) {
+        callback (err);
+      } else {
+        data = res.body
+          .trim()
+          .replace (/\s+\n/g, &#x27;\n&#x27;)
+          .split (&#x27;\n&#x27;)
+          .sort();
+
+        callback (null, data);
+      }
+    }
+  );
+
+  return app;
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.piwik.setup" id="apidoc.element.piwik.setup">
+        function <span class="apidocSignatureSpan">piwik.</span>setup
+        <span class="apidocSignatureSpan">(baseURL, token, timeout)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function methodSetup(baseURL, token, timeout) {
+  var url = urltool.parse (baseURL, true);
+
+  app.settings.baseURL = url.protocol + &#x27;//&#x27; + url.host
+    + url.pathname.replace (/\/[^\/]+$/, &#x27;/&#x27;);
+
+  // token in baseURL?
+  app.settings.token = url.query &#x26;&#x26; url.query.token_auth || null;
+
+  // override with custom token, and set timeout
+  if (typeof token === &#x27;number&#x27;) {
+    timeout = token;
+  } else if (token) {
+    app.settings.token = token;
+  }
+
+  app.settings.timeout = timeout || app.settings.timeout;
+  return app;
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.piwik.track" id="apidoc.element.piwik.track">
+        function <span class="apidocSignatureSpan">piwik.</span>track
+        <span class="apidocSignatureSpan">(vars, callback)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">function methodTrack(vars, callback) {
+  var bulk = {
+    requests: []
+  };
+  var i;
+
+  if (app.settings.token) {
+    bulk.token_auth = app.settings.token;
+  }
+
+  if (vars instanceof Array &#x26;&#x26; vars[0] instanceof Object) {
+    // array with objects
+    for (i = 0; i &#x3c; vars.length; i++) {
+      bulk.requests.push (trackObject2request (vars[i]));
+    }
+  } else if (vars instanceof Object) {
+    // object
+    bulk.requests.push (trackObject2request (vars));
+  }
+
+  talk ({
+    method: &#x27;POST&#x27;,
+    path: &#x27;piwik.php&#x27;,
+    body: JSON.stringify (bulk),
+    callback: function (err, data) {
+      if (err &#x26;&#x26; callback) {
+        callback (err);
+        return;
+      }
+
+      if (data.status === &#x27;success&#x27; &#x26;&#x26; callback) {
+        callback (null, data);
+      } else if (callback) {
+        callbackError (&#x27;track failed&#x27;, data, null, callback);
+      }
+    }
+  });
+
+  return app;
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    </ul>
+
+
+
+
+</div>
+
+<div class="apidocFooterDiv">
+    [ this document was created with
+    <a href="https://github.com/kaizhu256/node-utility2" target="_blank">utility2</a>
+    ]
+</div>
+</div>
